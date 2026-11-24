@@ -1,25 +1,42 @@
 services:
-  type: web
-  name: payflow-backend
-  runtime: docker
-  dockerfilePath: backend/Dockerfile
-  plan: free
-  region: oregon
-  healthCheckPath: /api/health
- autoDeployTrigger: commit
-  envVars:
-    - key: PORT
-      value: 8080
-    - key: SPRING_PROFILES_ACTIVE
-      value: prod
-    - key: SPRING_DATASOURCE_URL
-      fromDatabase:
-        name: payflow-postgres
-        property: connectionString
-    - key: CORS_ALLOWED_ORIGINS
-      sync: false
-    - key: JWT_SECRET
-      generateValue: true
+  - type: web
+    name: payflow-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_HOST
+        fromDatabase:
+          name: payflow-postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: payflow-postgres
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: payflow-postgres
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: payflow-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: payflow-postgres
+          property: password
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
 
 databases:
   - name: payflow-postgres
