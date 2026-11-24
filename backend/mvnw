@@ -1,0 +1,15 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Maven Wrapper Unix script
+# ----------------------------------------------------------------------------
+
+MAVEN_PROJECTBASEDIR="${0%/*}"
+
+if [ -z "$JAVA_HOME" ] ; then
+  JAVACMD="java"
+else
+  JAVACMD="$JAVA_HOME/bin/java"
+fi
+
+WRAPPER_JAR="$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.jar"
+exec "$JAVACMD" $MAVEN_OPTS -jar "$WRAPPER_JAR" "$@"

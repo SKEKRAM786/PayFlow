@@ -1,0 +1,72 @@
+name: PayFlow CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-test-and-package:
+    name: Backend Tests & Build (Java 21)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Backend Tests
+        run: |
+          mvn -f backend/pom.xml test
+
+      - name: Package Executable JAR
+        run: |
+          mvn -f backend/pom.xml package -DskipTests
+
+      - name: Upload Backend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: payflow-backend-jar
+          path: backend/target/*.jar
+          retention-days: 7
+
+  frontend-test-and-build:
+    name: Frontend Tests & Production Build (Node 20)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run Vitest Unit Tests
+        working-directory: ./frontend
+        run: npm test
+
+      - name: Build Production SPA
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: payflow-frontend-dist
+          path: frontend/dist/
+          retention-days: 7
