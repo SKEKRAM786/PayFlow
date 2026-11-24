@@ -1,7 +1,7 @@
 services:
   type: web
   name: payflow-backend
-  env: docker
+  runtime: docker
   dockerfilePath: backend/Dockerfile
   plan: free
   region: oregon
